@@ -1,5 +1,6 @@
 "use client";
 import { useUser } from "@clerk/nextjs";
+import { db } from "@/firebase";
 import {
   Box,
   Button,
@@ -17,9 +18,15 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { collection, writeBatch } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  doc,
+  collection,
+  setDoc,
+  getDoc,
+  writeBatch,
+} from "firebase/firestore";
 
 export default function Generate() {
   const { isLoaded, isSignedIn, user } = useUser();
@@ -47,21 +54,21 @@ export default function Generate() {
   };
 
   const handleOpen = () => {
-    setOpenI(true);
+    setOpen(true);
   };
 
   const handleClose = () => {
-    setOpenI(false);
+    setOpen(false);
   };
 
   const saveFlashcards = async () => {
-    if (name) {
+    if (!name) {
       alert("Please enter a name");
       return;
     }
 
     const batch = writeBatch(db);
-    const userDocRef = doc(colletion(db, "users"), user.id);
+    const userDocRef = doc(collection(db, "users"), user.id);
     const docSnap = await getDoc(userDocRef);
 
     if (docSnap.exists()) {
